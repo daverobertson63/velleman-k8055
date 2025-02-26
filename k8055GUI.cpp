@@ -102,6 +102,7 @@ cmd 5, Set analog / digital
 #include <limits.h>
 #include <iostream>
 #include <string>
+#include <concrt.h>
 
 
 #ifdef _WIN32
@@ -141,6 +142,7 @@ public:
 		ID_DBT2_2,
 		ID_DBT2_10,
 		ID_DBT2_1000,
+		ID_OUTPUT_TEST,
 		ID_DISCONNECT,
 		ID_RESCAN,
 		ID_SEND_OUTPUT_REPORT,
@@ -250,6 +252,7 @@ public:
 	long onDigitalOutput(FXObject* sender, FXSelector sel, void* ptr);
 	long onCounterReset(FXObject* sender, FXSelector sel, void* ptr);
 	long onDebounceValue(FXObject* sender, FXSelector sel, void* ptr);
+	long onOutputTest(FXObject* sender, FXSelector sel, void* ptr);
 
 
 	long onDisconnect(FXObject* sender, FXSelector sel, void* ptr);
@@ -308,7 +311,7 @@ FXDEFMAP(MainWindow) MainWindowMap[] = {
 	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_DBT2_10, MainWindow::onDebounceValue),
 	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_DBT2_1000, MainWindow::onDebounceValue),
 
-
+	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_OUTPUT_TEST, MainWindow::onOutputTest),
 
 	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_DISCONNECT, MainWindow::onDisconnect),
 	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_RESCAN, MainWindow::onRescan),
@@ -365,7 +368,7 @@ MainWindow::MainWindow(FXApp* app)
 
 	new FXSeparator(k1);
 
-	output_test = new FXButton(k1, "Output Test", NULL, this, ID_CONNECT, BUTTON_NORMAL | LAYOUT_FILL_X);
+	output_test = new FXButton(k1, "Output Test", NULL, this, ID_OUTPUT_TEST, BUTTON_NORMAL | LAYOUT_FILL_X);
 
 	//input_text = new FXText(new FXHorizontalFrame(innerVF, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN | FRAME_THICK, 0, 0, 0, 0, 0, 0, 0, 0), NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y);
 	//input_text->setEditable(false);
@@ -535,10 +538,14 @@ MainWindow::MainWindow(FXApp* app)
 
 
 	// Input Group Box
-	gb = new FXGroupBox(vf, "Input", FRAME_GROOVE | LAYOUT_FILL_X | LAYOUT_FILL_Y);
+	gb = new FXGroupBox(vf, "Logging Window", FRAME_GROOVE | LAYOUT_FILL_Y| LAYOUT_FILL_X);
+	
 	FXVerticalFrame* innerVF = new FXVerticalFrame(gb, LAYOUT_FILL_X | LAYOUT_FILL_Y);
-	input_text = new FXText(new FXHorizontalFrame(innerVF, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN | FRAME_THICK, 0, 0, 0, 0, 0, 0, 0, 0), NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y);
+	FXHorizontalFrame* inputFrameHF = new FXHorizontalFrame(innerVF, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN | FRAME_THICK);
+	
+	input_text = new FXText(inputFrameHF, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y);
 	input_text->setEditable(false);
+
 	new FXButton(innerVF, "Clear", NULL, this, ID_CLEAR, BUTTON_NORMAL | LAYOUT_RIGHT);
 
 
@@ -580,8 +587,6 @@ MainWindow::onConnectNew(FXObject* sender, FXSelector sel, void* ptr)
 
 	if (VDeviceConnected)
 		return 1;
-
-
 
 	FXint cur_item = device_list->getCurrentItem();
 	if (cur_item < 0)
@@ -630,10 +635,21 @@ MainWindow::onConnectNew(FXObject* sender, FXSelector sel, void* ptr)
 
 	// Default values in the original... 
 	SetCounterDebounceTime(1, 2);
-	SetCounterDebounceTime(2, 2);
+	Debounce1Time2ms->setCheck(true);
 
+
+	SetCounterDebounceTime(2, 2);
+	Debounce2Time2ms->setCheck(true);
+
+	
+	//FXSelector updatemessage = FXSEL(SEL_COMMAND, ID_DBT2_2);
+
+	// Resetting counters
 	ResetCounter(1);
 	ResetCounter(2);
+
+	ClearAllDigital();
+
 
 	getApp()->addTimeout(this, ID_TIMER,
 		5 * timeout_scalar /*5ms*/);
@@ -1045,6 +1061,31 @@ long MainWindow::onDebounceValue(FXObject* sender, FXSelector sel, void* ptr)
 	input_text->setBottomLine(INT_MAX);
 
 	//sender->handle(this, updatemessage, nullptr);
+
+
+	return 1;
+}
+
+long MainWindow::onOutputTest(FXObject* sender, FXSelector sel, void* ptr)
+{
+	int n = 1;
+	
+	ClearAllDigital();
+
+	for (int i = 0; i < 99; i++) {
+
+		ClearDigitalChannel(n);
+		n++;
+		if (n == 9)
+			n = 1;
+		SetDigitalChannel(n);
+
+		Concurrency::wait(10);
+
+	}
+
+	ClearAllDigital();
+
 
 
 	return 1;
