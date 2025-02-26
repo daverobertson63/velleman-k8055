@@ -16,10 +16,17 @@ So you can use this approach to write a native application using HID for a Windo
 
 ## Installation
 
-This is a Visual Studio project so just use git to clone it and run and compile
+This is a Visual Studio project so just use git to clone it and run and compile.  You should also get the hidapi from github and the fox toolkit version fox-1.7.85 - which seems to work ok.  I normally put everything into the git folder. so.... cd /users/username assuming you have a git folder
 
 ```bash
+
+download from http://fox-toolkit.org/ftp/fox-1.7.84.zip
+unzip fox-1.7.84.zip
+git clone https://github.com/libusb/hidapi.git
+
 git clone https://github.com/daverobertson63/velleman-k8055.git
+
+
 ```
 
 ## Usage
