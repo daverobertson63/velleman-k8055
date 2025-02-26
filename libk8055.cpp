@@ -634,8 +634,8 @@ int SetCounterDebounceTime(long CounterNo, long DebounceTime)
             value += 1;
         CurrDev->data_out[5 + CounterNo] = (unsigned char)value;
         if (DEBUG)
-            fprintf(stderr, "Debouncetime%d value for k8055:%d\n",
-                (int)CounterNo, CurrDev->data_out[5 + CounterNo]);
+            fprintf(stderr, "Debounce Counter %d value for k8055: %d\n",(int)CounterNo, CurrDev->data_out[5 + CounterNo]);
+
         return WriteK8055Data(CurrDev->data_out[0]);
     }
     else

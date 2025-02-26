@@ -10,9 +10,10 @@ This software is free to use.
 
 Input packet format
 
-+ -- - +-- - +-- - +-- - +-- - +-- - +-- - +-- - +
-| DIn | Sta | A1 | A2 | C1 | C2 |
-+-- - +-- - +-- - +-- - +-- - +-- - +-- - +-- - +
++-----+-----+-----+-----+-----+-----+-----+-----+
+| DIn | Sta | A1  | A2  | C1  |     | C2  |     |
++-----+-----+-----+-----+-----+-----+-----+-----+
+
 DIn = Digital input in high nibble, except for input 3 in 0x01
 Sta = Status, Board number + 1
 A1 = Analog input 1, 0 - 255
@@ -22,9 +23,10 @@ C2 = Counter 2, 16 bits(lsb)
 
 Output packet format
 
-+ -- - +-- - +-- - +-- - +-- - +-- - +-- - +-- - +
++-----+-----+-----+-----+-----+-----+-----+-----+
 | CMD | DIG | An1 | An2 | Rs1 | Rs2 | Dbv | Dbv |
-+-- - +-- - +-- - +-- - +-- - +-- - +-- - +-- - +
++-----+-----+-----+-----+-----+-----+-----+-----+
+
 CMD = Command
 DIG = Digital output bitmask
 An1 = Analog output 1 value, 0 - 255
@@ -98,6 +100,8 @@ cmd 5, Set analog / digital
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <iostream>
+#include <string>
 
 
 #ifdef _WIN32
@@ -189,14 +193,14 @@ private:
 	FXCheckButton* output_pin_8;
 
 	// Debouce Values
-	FXLabel *counter1;
+	FXLabel* counter1;
 	FXLabel* counter2;
 
 	FXRadioButton* Debounce1Time0ms;
 	FXRadioButton* Debounce1Time2ms;
 	FXRadioButton* Debounce1Time10ms;
 	FXRadioButton* Debounce1Time1000ms;
-	
+
 	FXRadioButton* Debounce2Time0ms;
 	FXRadioButton* Debounce2Time2ms;
 	FXRadioButton* Debounce2Time10ms;
@@ -238,15 +242,16 @@ public:
 	~MainWindow();
 	virtual void create();
 
-	
+
 	long onSetAllDigital(FXObject* sender, FXSelector sel, void* ptr);
 	long onClearAllDigital(FXObject* sender, FXSelector sel, void* ptr);
 	long onConnectNew(FXObject* sender, FXSelector sel, void* ptr);
 	long onDigitalInput(FXObject* sender, FXSelector sel, void* ptr);
 	long onDigitalOutput(FXObject* sender, FXSelector sel, void* ptr);
 	long onCounterReset(FXObject* sender, FXSelector sel, void* ptr);
+	long onDebounceValue(FXObject* sender, FXSelector sel, void* ptr);
 
-	
+
 	long onDisconnect(FXObject* sender, FXSelector sel, void* ptr);
 	long onRescan(FXObject* sender, FXSelector sel, void* ptr);
 	long onSendOutputReport(FXObject* sender, FXSelector sel, void* ptr);
@@ -292,7 +297,19 @@ FXDEFMAP(MainWindow) MainWindowMap[] = {
 
 	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_COUNTER_RESET_1, MainWindow::onCounterReset),
 	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_COUNTER_RESET_2, MainWindow::onCounterReset),
-	
+
+	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_DBT1_0, MainWindow::onDebounceValue),
+	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_DBT1_2, MainWindow::onDebounceValue),
+	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_DBT1_10, MainWindow::onDebounceValue),
+	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_DBT1_1000, MainWindow::onDebounceValue),
+
+	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_DBT2_0, MainWindow::onDebounceValue),
+	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_DBT2_2, MainWindow::onDebounceValue),
+	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_DBT2_10, MainWindow::onDebounceValue),
+	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_DBT2_1000, MainWindow::onDebounceValue),
+
+
+
 	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_DISCONNECT, MainWindow::onDisconnect),
 	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_RESCAN, MainWindow::onRescan),
 	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_SEND_OUTPUT_REPORT, MainWindow::onSendOutputReport),
@@ -387,19 +404,19 @@ MainWindow::MainWindow(FXApp* app)
 
 	sliderAD1 = new FXSlider(k4, &AD1_target, FXDataTarget::ID_VALUE, FX::SLIDER_INSIDE_BAR | LAYOUT_FILL_Y | LAYOUT_CENTER_X | SLIDER_VERTICAL | LAYOUT_FILL_ROW | LAYOUT_FILL_COLUMN);
 	sliderAD1->setRange(0, 255);
-	
+
 	sliderAD1->setSlotSize(100);
 
 	FXVerticalFrame* k5 = new FXVerticalFrame(contents, LAYOUT_FILL_Y | LAYOUT_FILL_X);
 	new FXLabel(k5, "AD2");
-	sliderAD2 = new FXSlider(k5, &AD2_target, FXDataTarget::ID_VALUE, FX::SLIDER_VERTICAL | LAYOUT_FILL_Y | LAYOUT_CENTER_X | SLIDER_VERTICAL | LAYOUT_FILL_ROW | LAYOUT_FILL_COLUMN,1000,1000);
+	sliderAD2 = new FXSlider(k5, &AD2_target, FXDataTarget::ID_VALUE, FX::SLIDER_INSIDE_BAR | LAYOUT_FILL_Y | LAYOUT_CENTER_X | SLIDER_VERTICAL | LAYOUT_FILL_ROW | LAYOUT_FILL_COLUMN, 1000, 1000);
 	sliderAD2->setRange(0, 255);
 
 
 
 	FXVerticalFrame* k6 = new FXVerticalFrame(contents, LAYOUT_FILL_Y | LAYOUT_FILL_X | FRAME_LINE);
 
-	
+
 
 	// Digital Input Values
 	FXGroupBox* kInputs = new FXGroupBox(k6, "Inputs", FRAME_THICK | LAYOUT_FILL_X);
@@ -409,10 +426,10 @@ MainWindow::MainWindow(FXApp* app)
 	input_pin_3 = new FXCheckButton(k6inputHF, "3", this, ID_DIGITAL_INPUT_2, LAYOUT_SIDE_TOP | FRAME_RIDGE | ICON_BEFORE_TEXT);
 	input_pin_4 = new FXCheckButton(k6inputHF, "4", this, ID_DIGITAL_INPUT_2, LAYOUT_SIDE_TOP | FRAME_RIDGE | ICON_BEFORE_TEXT);
 	input_pin_5 = new FXCheckButton(k6inputHF, "5", this, ID_DIGITAL_INPUT_2, LAYOUT_SIDE_TOP | FRAME_RIDGE | ICON_BEFORE_TEXT);
-	
+
 	FXGroupBox* kOutputs = new FXGroupBox(k6, "Outputs", FRAME_THICK | LAYOUT_FILL_X);
 	FXHorizontalFrame* k6outputHF = new FXHorizontalFrame(kOutputs, LAYOUT_FILL_X | LAYOUT_FILL_Y);
-	
+
 	output_pin_1 = new FXCheckButton(k6outputHF, "1", this, ID_DIGITAL_OUTPUT_1, LAYOUT_SIDE_TOP | FRAME_RIDGE | ICON_BEFORE_TEXT);
 	output_pin_2 = new FXCheckButton(k6outputHF, "2", this, ID_DIGITAL_OUTPUT_2, LAYOUT_SIDE_TOP | FRAME_RIDGE | ICON_BEFORE_TEXT);
 	output_pin_3 = new FXCheckButton(k6outputHF, "3", this, ID_DIGITAL_OUTPUT_3, LAYOUT_SIDE_TOP | FRAME_RIDGE | ICON_BEFORE_TEXT);
@@ -425,10 +442,10 @@ MainWindow::MainWindow(FXApp* app)
 
 	// Contains the counters and debounce info and timers
 	FXHorizontalFrame* k7 = new FXHorizontalFrame(k6, LAYOUT_FILL_Y | LAYOUT_FILL_X | FRAME_LINE);
-	
+
 	FXGroupBox* Counter1 = new FXGroupBox(k7, "Counter 1", FRAME_THICK | LAYOUT_FILL_X);
-	
-	counter1 = new FXLabel(Counter1,"0", NULL, JUSTIFY_LEFT | FRAME_GROOVE);
+
+	counter1 = new FXLabel(Counter1, "0", NULL, JUSTIFY_LEFT | FRAME_GROOVE);
 	reset_counter_1 = new FXButton(Counter1, "RESET", NULL, this, ID_COUNTER_RESET_1, BUTTON_NORMAL | LAYOUT_FILL_X);
 
 	FXGroupBox* DBT1 = new FXGroupBox(Counter1, "Debounce Time", FRAME_THICK | LAYOUT_FILL_X);
@@ -438,7 +455,7 @@ MainWindow::MainWindow(FXApp* app)
 	Debounce1Time10ms = new FXRadioButton(DBT1, "10ms", this, ID_DBT1_10, LAYOUT_SIDE_TOP | ICON_BEFORE_TEXT);
 	Debounce1Time1000ms = new FXRadioButton(DBT1, "1000ms", this, ID_DBT1_1000, LAYOUT_SIDE_TOP | ICON_BEFORE_TEXT);
 
-	
+
 
 	FXGroupBox* Counter2 = new FXGroupBox(k7, "Counter 2", FRAME_THICK | LAYOUT_FILL_X);
 	counter2 = new FXLabel(Counter2, "0", NULL, JUSTIFY_LEFT | FRAME_GROOVE);
@@ -564,7 +581,7 @@ MainWindow::onConnectNew(FXObject* sender, FXSelector sel, void* ptr)
 	if (VDeviceConnected)
 		return 1;
 
-	
+
 
 	FXint cur_item = device_list->getCurrentItem();
 	if (cur_item < 0)
@@ -580,8 +597,8 @@ MainWindow::onConnectNew(FXObject* sender, FXSelector sel, void* ptr)
 	bool sk6 = CardAddressSK6->getCheck();
 
 	int VDeviceNumber = 0;
-		
-	if (sk5 && sk6) 
+
+	if (sk5 && sk6)
 		VDeviceNumber = 0;
 	if (!sk5 && sk6)
 		VDeviceNumber = 1;
@@ -611,6 +628,13 @@ MainWindow::onConnectNew(FXObject* sender, FXSelector sel, void* ptr)
 	disconnect_button->enable();
 	input_text->setText(s + "\n");
 
+	// Default values in the original... 
+	SetCounterDebounceTime(1, 2);
+	SetCounterDebounceTime(2, 2);
+
+	ResetCounter(1);
+	ResetCounter(2);
+
 	getApp()->addTimeout(this, ID_TIMER,
 		5 * timeout_scalar /*5ms*/);
 
@@ -625,7 +649,7 @@ long MainWindow::onDigitalInput(FXObject* sender, FXSelector sel, void* ptr)
 	bool value = tickbox->getCheck();
 
 	fprintf(stderr, "Value of input dighital selectyed %d\n", value);
-		
+
 	return 0;
 }
 
@@ -638,15 +662,15 @@ long MainWindow::onDigitalOutput(FXObject* sender, FXSelector sel, void* ptr)
 	int theID = 0;
 
 	switch (FXSELID(sel)) {
-		
-		case ID_DIGITAL_OUTPUT_1: theID = 1; break;	
-		case ID_DIGITAL_OUTPUT_2: theID = 2; break;
-		case ID_DIGITAL_OUTPUT_3: theID = 3; break;
-		case ID_DIGITAL_OUTPUT_4: theID = 4; break;
-		case ID_DIGITAL_OUTPUT_5: theID = 5; break;
-		case ID_DIGITAL_OUTPUT_6: theID = 6; break;
-		case ID_DIGITAL_OUTPUT_7: theID = 7; break;
-		case ID_DIGITAL_OUTPUT_8: theID = 8; break;		
+
+	case ID_DIGITAL_OUTPUT_1: theID = 1; break;
+	case ID_DIGITAL_OUTPUT_2: theID = 2; break;
+	case ID_DIGITAL_OUTPUT_3: theID = 3; break;
+	case ID_DIGITAL_OUTPUT_4: theID = 4; break;
+	case ID_DIGITAL_OUTPUT_5: theID = 5; break;
+	case ID_DIGITAL_OUTPUT_6: theID = 6; break;
+	case ID_DIGITAL_OUTPUT_7: theID = 7; break;
+	case ID_DIGITAL_OUTPUT_8: theID = 8; break;
 	}
 
 	if (value)
@@ -716,8 +740,8 @@ MainWindow::onRescan(FXObject* sender, FXSelector sel, void* ptr)
 		FXListItem* li = new FXListItem(s, NULL, cur_dev);
 		int vid = 0x10CF;
 		int pid = 0x5500;
-		for (int i =0; i < 4; i++ ) {
-			if (cur_dev->vendor_id == 0x10CF ) {
+		for (int i = 0; i < 4; i++) {
+			if (cur_dev->vendor_id == 0x10CF) {
 				device_list->appendItem(li);
 				break;
 			}
@@ -913,7 +937,116 @@ MainWindow::onClear(FXObject* sender, FXSelector sel, void* ptr)
 long
 MainWindow::onCounterReset(FXObject* sender, FXSelector sel, void* ptr)
 {
-	input_text->setText("Counter Reset ");
+
+	char buffer[64];
+	
+	switch (FXSELID(sel)) {
+
+	case ID_COUNTER_RESET_1: 
+		ResetCounter(1); 
+		sprintf(buffer, "Debounce Counter Reset %d\n", 1);
+		break;
+	case ID_COUNTER_RESET_2: 
+		ResetCounter(2); 
+		sprintf(buffer, "Debounce Counter Reset %d\n", 2);
+		break;
+
+	}
+
+	input_text->appendText(buffer);
+	input_text->setBottomLine(INT_MAX);
+
+	return 1;
+}
+
+long MainWindow::onDebounceValue(FXObject* sender, FXSelector sel, void* ptr)
+{
+	char buffer[64];
+	int counter = 0;
+	int dbt = 0;
+
+	FXSelector updatemessage = FXSEL(SEL_COMMAND, ID_UNCHECK);
+
+	
+	
+
+	switch (FXSELID(sel)) {
+
+	case ID_DBT1_0:
+		counter = 1;
+		dbt = 0;
+		Debounce1Time2ms->setCheck(false);
+		Debounce1Time10ms->setCheck(false);
+		Debounce1Time1000ms->setCheck(false);
+		break;
+
+	case ID_DBT1_2:
+		counter = 1;
+		dbt = 2;
+		Debounce1Time0ms->setCheck(false);		
+		Debounce1Time10ms->setCheck(false);
+		Debounce1Time1000ms->setCheck(false);
+		break;
+
+	case ID_DBT1_10:
+		counter = 1;
+		dbt = 10;
+		Debounce1Time0ms->setCheck(false);
+		Debounce1Time2ms->setCheck(false);
+		Debounce1Time1000ms->setCheck(false);
+		break;
+
+	case ID_DBT1_1000:
+		counter = 1;
+		dbt = 1000;
+		Debounce1Time0ms->setCheck(false);
+		Debounce1Time2ms->setCheck(false);
+		Debounce1Time10ms->setCheck(false);
+		break;
+
+	case ID_DBT2_0:
+		counter = 2;
+		dbt = 0;
+		
+		Debounce2Time2ms->setCheck(false);
+		Debounce2Time10ms->setCheck(false);
+		Debounce2Time1000ms->setCheck(false);
+		break;
+	case ID_DBT2_2:
+		counter = 2;
+		dbt = 2;
+		Debounce2Time0ms->setCheck(false);
+		
+		Debounce2Time10ms->setCheck(false);
+		Debounce2Time1000ms->setCheck(false);
+		break;
+	case ID_DBT2_10:
+		counter = 2;
+		dbt = 10;
+		Debounce2Time0ms->setCheck(false);
+		Debounce2Time2ms->setCheck(false);
+		
+		Debounce2Time1000ms->setCheck(false);
+		break;
+	case ID_DBT2_1000:
+		counter = 2;
+		dbt = 1000;
+		Debounce2Time0ms->setCheck(false);
+		Debounce2Time2ms->setCheck(false);
+		Debounce2Time10ms->setCheck(false);
+		
+		break;
+
+	}
+
+	SetCounterDebounceTime(counter, dbt);
+	sprintf(buffer, "Debounce Counter: %d Time: %d\n", counter,dbt);
+	input_text->appendText(buffer);
+	input_text->setBottomLine(INT_MAX);
+
+	//sender->handle(this, updatemessage, nullptr);
+
+
 	return 1;
 }
 
@@ -928,6 +1061,14 @@ long MainWindow::onSetAllDigital(FXObject* sender, FXSelector sel, void* ptr)
 
 	s = "Write all Digital pins - LEDs should all light\n";
 
+	output_pin_1->setCheck(true);
+	output_pin_2->setCheck(true);
+	output_pin_3->setCheck(true);
+	output_pin_4->setCheck(true);
+	output_pin_5->setCheck(true);
+	output_pin_6->setCheck(true);
+	output_pin_7->setCheck(true);
+	output_pin_8->setCheck(true);
 
 	input_text->appendText(s);
 	input_text->setBottomLine(INT_MAX);
@@ -947,6 +1088,15 @@ long MainWindow::onClearAllDigital(FXObject* sender, FXSelector sel, void* ptr)
 	FXString s;
 
 	s = "Clear all Digital pins - LEDs will extinguish\n";
+
+	output_pin_1->setCheck(false);
+	output_pin_2->setCheck(false);
+	output_pin_3->setCheck(false);
+	output_pin_4->setCheck(false);
+	output_pin_5->setCheck(false);
+	output_pin_6->setCheck(false);
+	output_pin_7->setCheck(false);
+	output_pin_8->setCheck(false);
 
 	input_text->appendText(s);
 	input_text->setBottomLine(INT_MAX);
@@ -970,10 +1120,10 @@ MainWindow::onTimeout(FXObject* sender, FXSelector sel, void* ptr)
 	int result = ReadAllValues(&d, &a1, &a2, &c1, &c2);
 
 	if (result) {
-		
+
 		input_text->appendText("not connected or reading values...\n");
 		input_text->setBottomLine(INT_MAX);
-		
+
 	}
 
 	// Update the digital check boxes
@@ -983,18 +1133,32 @@ MainWindow::onTimeout(FXObject* sender, FXSelector sel, void* ptr)
 
 	// rval & (1 << (Channel - 1))) > 0)
 	//bool value = (bool)(d & (1 << (0))) > 0;
-	
+
 	input_pin_1->setCheck((d & (1 << (0))) > 0);
 	input_pin_2->setCheck((d & (1 << (1))) > 0);
 	input_pin_3->setCheck((d & (1 << (2))) > 0);
 	input_pin_4->setCheck((d & (1 << (3))) > 0);
 	input_pin_5->setCheck((d & (1 << (4))) > 0);
-	
+
 	AD1 = a1;
 	AD2 = a2;
 
+	long cv1 = ReadCounter(1);
+	long cv2 = ReadCounter(2);
+
+	// Could be better
+	char buffer[10];
+	sprintf(buffer, "%d", c1);
+
+	counter1->setText(buffer);
+	sprintf(buffer, "%d", c2);
+
+	counter2->setText(buffer);
+
+
+
 	//TODO - Might need to vary this a bit for performance... 
-	getApp()->addTimeout(this, ID_TIMER,1);
+	getApp()->addTimeout(this, ID_TIMER, 1);
 	return 1;
 }
 
