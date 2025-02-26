@@ -11,7 +11,7 @@ So I took that testgui and the excellent library components from [k8055](https:/
 
 So you can use this approach to write a native application using HID for a Windows application. You can also use the Velleman DLL which works equally well.  This project was more of a challenge… Use it with caution... But its a good example of a C++ gui and the HID library.
 
-![Fox GUI](https://raw.github.com/daverobertson63/velleman-k8055/master/gui.png)
+![Fox GUI](https://github.com/daverobertson63/velleman-k8055/blob/0a35307c10ba09186a9dd99867634ad1f66a15f9/gui.png)
 
 
 ## Installation
