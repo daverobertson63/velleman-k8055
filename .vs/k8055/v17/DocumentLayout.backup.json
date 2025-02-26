@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\daver\\git\\velleman-k8055\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{80C5347A-9810-4A2A-9E7D-2FAF54B3A9F3}|k8055.vcxproj|C:\\Users\\daver\\git\\velleman-k8055\\libk8055.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{80C5347A-9810-4A2A-9E7D-2FAF54B3A9F3}|k8055.vcxproj|solutionrelative:libk8055.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{80C5347A-9810-4A2A-9E7D-2FAF54B3A9F3}|k8055.vcxproj|C:\\Users\\daver\\git\\velleman-k8055\\k8055GUI.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{80C5347A-9810-4A2A-9E7D-2FAF54B3A9F3}|k8055.vcxproj|solutionrelative:k8055GUI.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
@@ -11,14 +15,7 @@
       "RelativeMoniker": "D:0:0:{80C5347A-9810-4A2A-9E7D-2FAF54B3A9F3}|k8055.vcxproj|solutionrelative:K8055.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{80C5347A-9810-4A2A-9E7D-2FAF54B3A9F3}|k8055.vcxproj|C:\\Users\\daver\\git\\velleman-k8055\\libk8055.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{80C5347A-9810-4A2A-9E7D-2FAF54B3A9F3}|k8055.vcxproj|solutionrelative:libk8055.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\daver\\git\\fox-1.7.85\\lib\\FXCheckButton.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80C5347A-9810-4A2A-9E7D-2FAF54B3A9F3}|k8055.vcxproj|C:\\USERS\\DAVER\\GIT\\FOX-1.7.85\\INCLUDE\\FXCHECKBUTTON.H||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\daver\\git\\fox-1.7.85\\lib\\FXObject.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
@@ -35,6 +32,9 @@
     {
       "AbsoluteMoniker": "D:0:0:{80C5347A-9810-4A2A-9E7D-2FAF54B3A9F3}|k8055.vcxproj|C:\\Users\\daver\\git\\velleman-k8055\\hid.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{80C5347A-9810-4A2A-9E7D-2FAF54B3A9F3}|k8055.vcxproj|solutionrelative:hid.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\daver\\git\\fox-1.7.85\\include\\FXCheckButton.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -44,11 +44,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 13,
+          "SelectedChildIndex": 11,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 8,
               "Title": "hid.c",
               "DocumentMoniker": "C:\\Users\\daver\\git\\velleman-k8055\\hid.c",
               "RelativeDocumentMoniker": "hid.c",
@@ -77,7 +77,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 9,
               "Title": "FXCheckButton.h",
               "DocumentMoniker": "C:\\Users\\daver\\git\\fox-1.7.85\\include\\FXCheckButton.h",
               "RelativeDocumentMoniker": "..\\fox-1.7.85\\include\\FXCheckButton.h",
@@ -85,8 +85,7 @@
               "RelativeToolTip": "..\\fox-1.7.85\\include\\FXCheckButton.h",
               "ViewState": "AgIAAFcAAAAAAAAAAAAmwGwAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-02-26T07:52:03.805Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-26T07:52:03.805Z"
             },
             {
               "$type": "Document",
@@ -98,12 +97,11 @@
               "RelativeToolTip": "..\\fox-1.7.85\\lib\\FXCheckButton.cpp",
               "ViewState": "AgIAAHcAAAAAAAAAAAAmwIYAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-02-26T07:41:15.462Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-26T07:41:15.462Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "FXObject.cpp",
               "DocumentMoniker": "C:\\Users\\daver\\git\\fox-1.7.85\\lib\\FXObject.cpp",
               "RelativeDocumentMoniker": "..\\fox-1.7.85\\lib\\FXObject.cpp",
@@ -115,7 +113,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 7,
               "Title": "layout.cpp",
               "DocumentMoniker": "C:\\Users\\daver\\git\\fox-1.7.85\\windows\\LayoutTester\\layout.cpp",
               "RelativeDocumentMoniker": "..\\fox-1.7.85\\windows\\LayoutTester\\layout.cpp",
@@ -127,7 +125,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 6,
               "Title": "fx.h",
               "DocumentMoniker": "C:\\Users\\daver\\git\\fox-1.7.85\\include\\fx.h",
               "RelativeDocumentMoniker": "..\\fox-1.7.85\\include\\fx.h",
@@ -139,7 +137,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 5,
               "Title": "hid.c",
               "DocumentMoniker": "C:\\Users\\daver\\git\\hidapi\\windows\\hid.c",
               "RelativeDocumentMoniker": "..\\hidapi\\windows\\hid.c",
@@ -151,20 +149,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "libk8055.cpp",
               "DocumentMoniker": "C:\\Users\\daver\\git\\velleman-k8055\\libk8055.cpp",
               "RelativeDocumentMoniker": "libk8055.cpp",
               "ToolTip": "C:\\Users\\daver\\git\\velleman-k8055\\libk8055.cpp",
               "RelativeToolTip": "libk8055.cpp",
-              "ViewState": "AgIAADECAAAAAAAAAAAAADIBAAAUAAAAAAAAAA==",
+              "ViewState": "AgIAAEUAAAAAAAAAAAAAAAAAAAA7AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-02-15T16:21:41.925Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "k8055.h",
               "DocumentMoniker": "C:\\Users\\daver\\git\\velleman-k8055\\k8055.h",
               "RelativeDocumentMoniker": "k8055.h",
@@ -172,18 +170,17 @@
               "RelativeToolTip": "k8055.h",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAADUAAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-02-15T16:15:41.657Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-15T16:15:41.657Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "k8055GUI.cpp",
               "DocumentMoniker": "C:\\Users\\daver\\git\\velleman-k8055\\k8055GUI.cpp",
               "RelativeDocumentMoniker": "k8055GUI.cpp",
               "ToolTip": "C:\\Users\\daver\\git\\velleman-k8055\\k8055GUI.cpp",
               "RelativeToolTip": "k8055GUI.cpp",
-              "ViewState": "AgIAAKcBAAAAAAAAAAAawLYBAAAzAAAAAAAAAA==",
+              "ViewState": "AgIAAPUBAAAAAAAAAAAmwFECAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-02-14T16:37:01.019Z",
               "EditorCaption": ""
