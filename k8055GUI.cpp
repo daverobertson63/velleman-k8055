@@ -119,6 +119,8 @@ public:
 		ID_CONNECT,
 		ID_SET_ALL_DIGITAL,
 		ID_CLEAR_ALL_DIGITAL,
+		ID_SET_ALL_ANALOG,
+		ID_CLEAR_ALL_ANALOG,
 		ID_DIGITAL_INPUT_1,
 		ID_DIGITAL_INPUT_2,
 		ID_DIGITAL_INPUT_3,
@@ -170,13 +172,23 @@ private:
 
 	FXButton* set_all_digital;
 	FXButton* clear_all_digital;
+	
 	FXButton* set_all_analog;
 	FXButton* clear_all_analog;
+	
 	FXButton* output_test;
+
+	FXSlider* sliderDA1;
+	FXSlider* sliderDA2;
+	FXSlider* sliderAD1;
+	FXSlider* sliderAD2;
+
+	// Output Analog controllers
+	FXTextField* BoxAD1;
+	FXTextField* BoxAD2;
 
 	FXButton* reset_counter_1;
 	FXButton* reset_counter_2;
-
 
 	// Check buttons for all digital pin in and out
 	FXCheckButton* input_pin_1;
@@ -224,10 +236,17 @@ private:
 	// Use the data target thing to update the values... 
 	FXint AD2 = 0;
 	FXint AD1 = 0;
+
+	// Data Target for DA Outputs - we can use these to control the output values - linked to the slider values
+	FXint DA1 = 0;
+	FXint DA2 = 0;
+
 	int AD1Counter = 0;
 
 	FXDataTarget       AD1_target;
 	FXDataTarget       AD2_target;
+	FXDataTarget       DA1_target;
+	FXDataTarget       DA2_target;
 
 	bool VDeviceConnected = false;
 
@@ -243,6 +262,10 @@ public:
 	MainWindow(FXApp* a);
 	~MainWindow();
 	virtual void create();
+
+
+	long onSetAllAnalog(FXObject* sender, FXSelector sel, void* ptr);
+	long onClearAllAnalog(FXObject* sender, FXSelector sel, void* ptr);
 
 
 	long onSetAllDigital(FXObject* sender, FXSelector sel, void* ptr);
@@ -283,6 +306,9 @@ FXDEFMAP(MainWindow) MainWindowMap[] = {
 	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_CONNECT, MainWindow::onConnectNew),
 	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_SET_ALL_DIGITAL, MainWindow::onSetAllDigital),
 	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_CLEAR_ALL_DIGITAL, MainWindow::onClearAllDigital),
+	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_SET_ALL_ANALOG, MainWindow::onSetAllAnalog),
+	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_CLEAR_ALL_ANALOG, MainWindow::onClearAllAnalog),
+
 	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_DIGITAL_INPUT_1, MainWindow::onDigitalInput),
 	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_DIGITAL_INPUT_2, MainWindow::onDigitalInput),
 	FXMAPFUNC(SEL_COMMAND, MainWindow::ID_DIGITAL_INPUT_3, MainWindow::onDigitalInput),
@@ -363,63 +389,58 @@ MainWindow::MainWindow(FXApp* app)
 	// Spacer
 	new FXSeparator(k1);
 
-	set_all_analog = new FXButton(k1, "Set All Analog", NULL, this, ID_CONNECT, BUTTON_NORMAL | LAYOUT_FILL_X);
-	clear_all_analog = new FXButton(k1, "Clear All Analog", NULL, this, ID_CONNECT, BUTTON_NORMAL | LAYOUT_FILL_X);
+	set_all_analog = new FXButton(k1, "Set All Analog", NULL, this, ID_SET_ALL_ANALOG, BUTTON_NORMAL | LAYOUT_FILL_X);
+	clear_all_analog = new FXButton(k1, "Clear All Analog", NULL, this, ID_CLEAR_ALL_ANALOG, BUTTON_NORMAL | LAYOUT_FILL_X);
 
 	new FXSeparator(k1);
 
 	output_test = new FXButton(k1, "Output Test", NULL, this, ID_OUTPUT_TEST, BUTTON_NORMAL | LAYOUT_FILL_X);
 
+	// This is thge DA1 slider frame
+	FXVerticalFrame* k2 = new FXVerticalFrame(contents,LAYOUT_FILL_X,0,0,1000,1000);
+	FXGroupBox* SliderControls = new FXGroupBox(k2, "Analog Slider Controls                                        ", FRAME_THICK | LAYOUT_FILL_X);
+	//FXHorizontalFrame* k2 = new FXHorizontalFrame(contents);
+
 	//input_text = new FXText(new FXHorizontalFrame(innerVF, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN | FRAME_THICK, 0, 0, 0, 0, 0, 0, 0, 0), NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y);
 	//input_text->setEditable(false);
 	//new FXButton(innerVF, "Clear", NULL, this, ID_CLEAR, BUTTON_NORMAL | LAYOUT_RIGHT);
 
+	// I dont know how to get this slider a bit wider - help!
+	//new FXLabel(k2, "Analog Slider Controls                                        ", nullptr, LAYOUT_CENTER_X);	
+	//FXMatrix* slidermatrix = new FXMatrix(k2, 3, FRAME_RIDGE | MATRIX_BY_COLUMNS | LAYOUT_FILL_X, 0, 0, 0, 0, 2, 2, 2, 2, 4, 4);
+	FXMatrix* slidermatrix = new FXMatrix(SliderControls, 3,  MATRIX_BY_COLUMNS | LAYOUT_FILL_X);
 
-
-	// This is thge DA1 slider frame
-	FXVerticalFrame* k2 = new FXVerticalFrame(contents, LAYOUT_FILL_Y);
-
-	FXSlider* sliderDA1;
-	FXSlider* sliderDA2;
-	FXSlider* sliderAD1;
-	FXSlider* sliderAD2;
-
-
-	AD1_target.connect(AD1);
-	AD2_target.connect(AD2);
-
-	new FXLabel(k2, "DA1");
-	sliderDA1 = new FXSlider(k2, nullptr, 0, FX::SLIDER_INSIDE_BAR | LAYOUT_FILL_Y | LAYOUT_CENTER_X | SLIDER_VERTICAL | LAYOUT_FILL_ROW | LAYOUT_FILL_COLUMN, 0, 0, 100, 400);
+	new FXLabel(slidermatrix, "DA1:", nullptr, LAYOUT_LEFT);
+	BoxAD1 = new FXTextField(slidermatrix, 4, &DA1_target, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER | JUSTIFY_RIGHT | FRAME_SUNKEN | FRAME_THICK);
+	
+	sliderDA1 = new FXSlider(slidermatrix, &DA1_target, FXDataTarget::ID_VALUE, LAYOUT_CENTER_Y | LAYOUT_FILL_X | SLIDER_INSIDE_BAR | LAYOUT_FILL_COLUMN);
+	//FXSlider* sang1 = new FXSlider(arcangles, nullptr, 0, LAYOUT_CENTER_Y | LAYOUT_FILL_X | SLIDER_INSIDE_BAR );
 	sliderDA1->setRange(0, 255);
 
+	new FXLabel(slidermatrix, "DA2:", nullptr, LAYOUT_LEFT);
+	BoxAD2 = new FXTextField(slidermatrix, 4, &DA2_target, FXDataTarget::ID_VALUE,TEXTFIELD_INTEGER | JUSTIFY_RIGHT | FRAME_SUNKEN | FRAME_THICK);
+	
 
-	FXVerticalFrame* k3 = new FXVerticalFrame(contents, LAYOUT_FILL_Y | LAYOUT_FILL_X);
-	new FXLabel(k3, "DA2");
-	sliderDA2 = new FXSlider(k3, nullptr, 0, FX::SLIDER_INSIDE_BAR | LAYOUT_FILL_Y | LAYOUT_CENTER_X | SLIDER_VERTICAL | LAYOUT_FILL_ROW | LAYOUT_FILL_COLUMN, 0, 0, 50, 200);
-	sliderDA2->setRange(0, 255);
+	sliderDA2 = new FXSlider(slidermatrix, &DA2_target, FXDataTarget::ID_VALUE, LAYOUT_CENTER_Y | LAYOUT_FILL_X | SLIDER_INSIDE_BAR | LAYOUT_FILL_COLUMN);
+	sliderDA2->setRange(0,255);
+	
+	// Target data connectors
+	AD1_target.connect(AD1);
+	AD2_target.connect(AD2);
+	DA1_target.connect(DA1);
+	DA2_target.connect(DA2);
 
-
-	//slider = new FXSlider(k2, nullptr, 0, LAYOUT_TOP | LAYOUT_FIX_WIDTH | LAYOUT_FIX_HEIGHT | SLIDER_VERTICAL, 0, 0, 200, 30);
-
-	FXVerticalFrame* k4 = new FXVerticalFrame(contents, LAYOUT_FILL_Y | LAYOUT_FILL_X);
-	new FXLabel(k4, "AD1");
-
-
-	sliderAD1 = new FXSlider(k4, &AD1_target, FXDataTarget::ID_VALUE, FX::SLIDER_INSIDE_BAR | LAYOUT_FILL_Y | LAYOUT_CENTER_X | SLIDER_VERTICAL | LAYOUT_FILL_ROW | LAYOUT_FILL_COLUMN);
+	new FXLabel(slidermatrix, "AD1:", nullptr, LAYOUT_LEFT);
+	new FXTextField(slidermatrix, 4, &AD1_target, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER | JUSTIFY_RIGHT | FRAME_SUNKEN | FRAME_THICK);
+	sliderAD1 = new FXSlider(slidermatrix, &AD1_target, FXDataTarget::ID_VALUE, LAYOUT_CENTER_Y | LAYOUT_FILL_X | SLIDER_INSIDE_BAR | LAYOUT_FILL_COLUMN);
 	sliderAD1->setRange(0, 255);
 
-	sliderAD1->setSlotSize(100);
-
-	FXVerticalFrame* k5 = new FXVerticalFrame(contents, LAYOUT_FILL_Y | LAYOUT_FILL_X);
-	new FXLabel(k5, "AD2");
-	sliderAD2 = new FXSlider(k5, &AD2_target, FXDataTarget::ID_VALUE, FX::SLIDER_INSIDE_BAR | LAYOUT_FILL_Y | LAYOUT_CENTER_X | SLIDER_VERTICAL | LAYOUT_FILL_ROW | LAYOUT_FILL_COLUMN, 1000, 1000);
+	new FXLabel(slidermatrix, "AD2:", nullptr, LAYOUT_LEFT);
+	new FXTextField(slidermatrix, 4, &AD2_target, FXDataTarget::ID_VALUE, TEXTFIELD_INTEGER | JUSTIFY_RIGHT | FRAME_SUNKEN | FRAME_THICK);
+	sliderAD2 = new FXSlider(slidermatrix, &AD2_target, FXDataTarget::ID_VALUE, LAYOUT_CENTER_Y | LAYOUT_FILL_X | SLIDER_INSIDE_BAR | LAYOUT_FILL_COLUMN);
 	sliderAD2->setRange(0, 255);
-
-
-
+	
 	FXVerticalFrame* k6 = new FXVerticalFrame(contents, LAYOUT_FILL_Y | LAYOUT_FILL_X | FRAME_LINE);
-
-
 
 	// Digital Input Values
 	FXGroupBox* kInputs = new FXGroupBox(k6, "Inputs", FRAME_THICK | LAYOUT_FILL_X);
@@ -442,7 +463,6 @@ MainWindow::MainWindow(FXApp* app)
 	output_pin_7 = new FXCheckButton(k6outputHF, "7", this, ID_DIGITAL_OUTPUT_7, LAYOUT_SIDE_TOP | FRAME_RIDGE | ICON_BEFORE_TEXT);
 	output_pin_8 = new FXCheckButton(k6outputHF, "8", this, ID_DIGITAL_OUTPUT_8, LAYOUT_SIDE_TOP | FRAME_RIDGE | ICON_BEFORE_TEXT);
 
-
 	// Contains the counters and debounce info and timers
 	FXHorizontalFrame* k7 = new FXHorizontalFrame(k6, LAYOUT_FILL_Y | LAYOUT_FILL_X | FRAME_LINE);
 
@@ -458,8 +478,6 @@ MainWindow::MainWindow(FXApp* app)
 	Debounce1Time10ms = new FXRadioButton(DBT1, "10ms", this, ID_DBT1_10, LAYOUT_SIDE_TOP | ICON_BEFORE_TEXT);
 	Debounce1Time1000ms = new FXRadioButton(DBT1, "1000ms", this, ID_DBT1_1000, LAYOUT_SIDE_TOP | ICON_BEFORE_TEXT);
 
-
-
 	FXGroupBox* Counter2 = new FXGroupBox(k7, "Counter 2", FRAME_THICK | LAYOUT_FILL_X);
 	counter2 = new FXLabel(Counter2, "0", NULL, JUSTIFY_LEFT | FRAME_GROOVE);
 
@@ -470,9 +488,6 @@ MainWindow::MainWindow(FXApp* app)
 	Debounce2Time2ms = new FXRadioButton(DBT2, "2ms", this, ID_DBT2_2, LAYOUT_SIDE_TOP | ICON_BEFORE_TEXT);
 	Debounce2Time10ms = new FXRadioButton(DBT2, "10ms", this, ID_DBT2_10, LAYOUT_SIDE_TOP | ICON_BEFORE_TEXT);
 	Debounce2Time1000ms = new FXRadioButton(DBT2, "1000ms", this, ID_DBT2_1000, LAYOUT_SIDE_TOP | ICON_BEFORE_TEXT);
-
-
-
 
 	FXLabel* label = new FXLabel(vf, "K8055 Test Tool");
 	title_font = new FXFont(getApp(), "Arial", 14, FXFont::Bold);
@@ -536,7 +551,6 @@ MainWindow::MainWindow(FXApp* app)
 	get_feature_button = new FXButton(matrix, "Get Feature Report", NULL, this, ID_GET_FEATURE_REPORT, BUTTON_NORMAL | LAYOUT_FILL_X);
 	get_feature_button->disable();
 
-
 	// Input Group Box
 	gb = new FXGroupBox(vf, "Logging Window", FRAME_GROOVE | LAYOUT_FILL_Y| LAYOUT_FILL_X);
 	
@@ -547,9 +561,6 @@ MainWindow::MainWindow(FXApp* app)
 	input_text->setEditable(false);
 
 	new FXButton(innerVF, "Clear", NULL, this, ID_CLEAR, BUTTON_NORMAL | LAYOUT_RIGHT);
-
-
-
 
 
 }
@@ -1147,6 +1158,53 @@ long MainWindow::onClearAllDigital(FXObject* sender, FXSelector sel, void* ptr)
 	return 0;
 }
 
+/*
+	Set all output poins on and LED to match
+*/
+long MainWindow::onSetAllAnalog(FXObject* sender, FXSelector sel, void* ptr)
+{
+
+	FXString s;
+
+	s = "Full values for analog output - 255\n";
+
+	DA1 = 255;
+	DA2 = 255;
+
+	SetAllAnalog();
+	
+
+	input_text->appendText(s);
+	input_text->setBottomLine(INT_MAX);
+
+	
+
+	return 0;
+}
+
+
+/*
+	Set all output poins on and LED to match
+*/
+long MainWindow::onClearAllAnalog(FXObject* sender, FXSelector sel, void* ptr)
+{
+
+	FXString s;
+
+	s = "Analog output is now zero \n";
+
+	DA1 = 0;
+	DA2 = 0;
+
+	ClearAllAnalog();
+
+	input_text->appendText(s);
+	input_text->setBottomLine(INT_MAX);
+
+
+
+	return 0;
+}
 
 
 
@@ -1187,7 +1245,12 @@ MainWindow::onTimeout(FXObject* sender, FXSelector sel, void* ptr)
 	long cv1 = ReadCounter(1);
 	long cv2 = ReadCounter(2);
 
+	OutputAnalogChannel(1, DA1);
+	OutputAnalogChannel(2, DA2);
+
+
 	// Could be better
+	/*
 	char buffer[10];
 	sprintf(buffer, "%d", c1);
 
@@ -1196,7 +1259,19 @@ MainWindow::onTimeout(FXObject* sender, FXSelector sel, void* ptr)
 
 	counter2->setText(buffer);
 
+	int valueDA1 = sliderDA1->getValue();
+	int valueDA2 = sliderDA2->getValue();
 
+	
+	
+	sprintf(buffer, "%d", valueDA1);
+
+	BoxAD1->setText(buffer);
+	sprintf(buffer, "%d", valueDA2);
+
+	BoxAD2->setText(buffer);
+
+	*/
 
 	//TODO - Might need to vary this a bit for performance... 
 	getApp()->addTimeout(this, ID_TIMER, 1);
