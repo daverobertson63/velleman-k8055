@@ -123,7 +123,8 @@
 #define CMD_SET_ANALOG_DIGITAL 0x05
 
 /* set debug to 0 to not print excess info */
-int DEBUGINT = 0;
+
+#define DEBUG 1
 
 /* variables for usb */
 static struct usb_bus* bus, * busses;
@@ -642,7 +643,3 @@ int SetCounterDebounceTime(long CounterNo, long DebounceTime)
         return K8055_ERROR;
 }
 
-char* Version(void)
-{
-    return("VERSION");  
-}

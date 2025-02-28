@@ -1,8 +1,3 @@
-﻿  k8055GUI.cpp
-C:\Users\daver\git\velleman-k8055\k8055GUI.cpp(807,14): warning C4244: '=': conversion from 'long' to 'char', possible loss of data
-C:\Users\daver\git\velleman-k8055\k8055GUI.cpp(851,19): warning C4101: 'len': unreferenced local variable
-C:\Users\daver\git\velleman-k8055\k8055GUI.cpp(852,6): warning C4101: 'textfield_len': unreferenced local variable
-C:\Users\daver\git\velleman-k8055\k8055GUI.cpp(851,9): warning C4101: 'data_len': unreferenced local variable
-C:\Users\daver\git\velleman-k8055\k8055GUI.cpp(1216,16): warning C4101: 'vPacket': unreferenced local variable
-C:\Users\daver\git\velleman-k8055\k8055GUI.cpp(1214,16): warning C4101: 'buf': unreferenced local variable
+﻿  libk8055.cpp
+C:\Users\daver\git\velleman-k8055\libk8055.cpp(633,36): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   k8055.vcxproj -> C:\Users\daver\git\velleman-k8055\x64\Debug\K8055.exe
