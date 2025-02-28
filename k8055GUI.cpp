@@ -398,7 +398,7 @@ MainWindow::MainWindow(FXApp* app)
 
 	// This is thge DA1 slider frame
 	FXVerticalFrame* k2 = new FXVerticalFrame(contents,LAYOUT_FILL_X,0,0,1000,1000);
-	FXGroupBox* SliderControls = new FXGroupBox(k2, "Analog Slider Controls                                        ", FRAME_THICK | LAYOUT_FILL_X);
+	FXGroupBox* SliderControls = new FXGroupBox(k2, "Analog Slider Controls", FRAME_THICK | LAYOUT_FIX_WIDTH |GROUPBOX_TITLE_LEFT | FRAME_GROOVE | LAYOUT_FILL_Y,0,0,400,0);
 	//FXHorizontalFrame* k2 = new FXHorizontalFrame(contents);
 
 	//input_text = new FXText(new FXHorizontalFrame(innerVF, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN | FRAME_THICK, 0, 0, 0, 0, 0, 0, 0, 0), NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y);

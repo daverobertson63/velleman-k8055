@@ -5,6 +5,10 @@ VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "K8055", "k8055.vcxproj", "{80C5347A-9810-4A2A-9E7D-2FAF54B3A9F3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "K8055DLL", "K8055DLL", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "K8055-DLL", "K8055-DLL\K8055-DLL.vcxproj", "{2267D3B3-44B5-44FE-AAE4-DF378CE54F96}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -21,8 +25,19 @@ Global
 		{80C5347A-9810-4A2A-9E7D-2FAF54B3A9F3}.Release|Win32.Build.0 = Release|Win32
 		{80C5347A-9810-4A2A-9E7D-2FAF54B3A9F3}.Release|x64.ActiveCfg = Release|x64
 		{80C5347A-9810-4A2A-9E7D-2FAF54B3A9F3}.Release|x64.Build.0 = Release|x64
+		{2267D3B3-44B5-44FE-AAE4-DF378CE54F96}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2267D3B3-44B5-44FE-AAE4-DF378CE54F96}.Debug|Win32.Build.0 = Debug|Win32
+		{2267D3B3-44B5-44FE-AAE4-DF378CE54F96}.Debug|x64.ActiveCfg = Debug|x64
+		{2267D3B3-44B5-44FE-AAE4-DF378CE54F96}.Debug|x64.Build.0 = Debug|x64
+		{2267D3B3-44B5-44FE-AAE4-DF378CE54F96}.Release|Win32.ActiveCfg = Release|Win32
+		{2267D3B3-44B5-44FE-AAE4-DF378CE54F96}.Release|Win32.Build.0 = Release|Win32
+		{2267D3B3-44B5-44FE-AAE4-DF378CE54F96}.Release|x64.ActiveCfg = Release|x64
+		{2267D3B3-44B5-44FE-AAE4-DF378CE54F96}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {859AD060-A89E-4DC0-9728-4B2C762206D2}
 	EndGlobalSection
 EndGlobal
