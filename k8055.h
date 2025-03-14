@@ -1,4 +1,5 @@
 #pragma once
+#include <hidapi.h>
 
 /* $Id: k8055.h,v 1.4 2008/05/21 20:25:51 mr_brain Exp $
 
@@ -50,7 +51,8 @@ extern "C" {
 	int SetAllValues(int digitaldata, int addata1, int addata2);
 	long SetCurrentDevice(long deviceno);
 	long SearchDevices(void);
-	char* Version(void);
+	
+	hid_device* GetCurrentDevice();
 #ifdef __cplusplus
 }
 #endif

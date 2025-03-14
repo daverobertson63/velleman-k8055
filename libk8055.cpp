@@ -164,6 +164,9 @@ static void init_usb(void)
     }
 }
 /* Actual read of data from the device endpoint, retry 3 times if not responding ok */
+
+
+
 static int ReadK8055Data(void)
 {
     int read_status = 0, i = 0;
@@ -255,6 +258,8 @@ static int WriteK8055Data(unsigned char cmd)
     
     //return K8055_ERROR;
 }
+
+
 
 // TODO
 bool VBoardIsCorrect(long BoardAddress, char* HIDPath)
@@ -357,6 +362,8 @@ int CloseDevice()
     
 }
 
+
+
 /* New function in version 2 of Velleman DLL, should return deviceno if OK */
 long SetCurrentDevice(long deviceno)
 {
@@ -395,6 +402,11 @@ long SearchDevices(void)
     }
     */
     return retval;
+}
+
+hid_device* GetCurrentDevice()
+{
+    return connected_device;
 }
 
 long ReadAnalogChannel(long Channel)
@@ -641,5 +653,19 @@ int SetCounterDebounceTime(long CounterNo, long DebounceTime)
     }
     else
         return K8055_ERROR;
+}
+
+int GetFeatureReport(unsigned char Buffer, long DataLen)
+{
+    
+    int res = hid_get_feature_report(connected_device, (unsigned char*)Buffer, sizeof(Buffer));
+
+
+    if (res < 0) {
+       // FXMessageBox::error(this, MBOX_OK, "Error Getting Report", "Could not get feature report from device. Error reported was: %ls", hid_error(connected_device));
+    }
+
+
+    return 0;
 }
 

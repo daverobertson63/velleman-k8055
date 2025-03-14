@@ -489,27 +489,17 @@ MainWindow::MainWindow(FXApp* app)
 	Debounce2Time10ms = new FXRadioButton(DBT2, "10ms", this, ID_DBT2_10, LAYOUT_SIDE_TOP | ICON_BEFORE_TEXT);
 	Debounce2Time1000ms = new FXRadioButton(DBT2, "1000ms", this, ID_DBT2_1000, LAYOUT_SIDE_TOP | ICON_BEFORE_TEXT);
 
-	FXLabel* label = new FXLabel(vf, "K8055 Test Tool");
+	FXLabel* label = new FXLabel(vf, "Velleman P8055 Development Board");
 	title_font = new FXFont(getApp(), "Arial", 14, FXFont::Bold);
 	label->setFont(title_font);
 
 	new FXLabel(vf,
-		"Select a device and press Connect.", NULL, JUSTIFY_LEFT);
+		"Select a Velleman device and press Connect.", NULL, JUSTIFY_LEFT);
 	new FXLabel(vf,
-		"Output data bytes can be entered in the Output section, \n"
-		"separated by space, comma or brackets. Data starting with 0x\n"
-		"is treated as hex. Data beginning with a 0 is treated as \n"
-		"octal. All other data is treated as decimal.", NULL, JUSTIFY_LEFT);
-	new FXLabel(vf,
-		"Data received from the device appears in the Input section.",
-		NULL, JUSTIFY_LEFT);
-	new FXLabel(vf,
-		"Optionally, a report length may be specified. Extra bytes are\n"
-		"padded with zeros. If no length is specified, the length is \n"
-		"inferred from the data.",
-		NULL, JUSTIFY_LEFT);
-	new FXLabel(vf, "");
-
+		"This CPP tool can be used to develop apps with the fabulous \n"
+		"Velleman P8055 Development Board\n\n"
+		"Long before Arduino was a thing - this board ruled.  Enjoy\n", NULL, JUSTIFY_LEFT);
+	
 	// Device List and Connect/Disconnect buttons
 	FXHorizontalFrame* hf = new FXHorizontalFrame(vf, LAYOUT_FILL_X);
 	//device_list = new FXList(new FXHorizontalFrame(hf,FRAME_SUNKEN|FRAME_THICK, 0,0,0,0, 0,0,0,0), NULL, 0, LISTBOX_NORMAL|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT, 0,0,300,200);
@@ -525,8 +515,10 @@ MainWindow::MainWindow(FXApp* app)
 
 	new FXHorizontalFrame(vf);
 
+	
 	// Output Group Box
-	FXGroupBox* gb = new FXGroupBox(vf, "Output", FRAME_GROOVE | LAYOUT_FILL_X);
+	//FXGroupBox* gb = new FXGroupBox(vf, "Output", FRAME_GROOVE | LAYOUT_FILL_X);
+	/*
 	FXMatrix* matrix = new FXMatrix(gb, 3, MATRIX_BY_COLUMNS | LAYOUT_FILL_X);
 	new FXLabel(matrix, "Data");
 	new FXLabel(matrix, "Length");
@@ -551,8 +543,10 @@ MainWindow::MainWindow(FXApp* app)
 	get_feature_button = new FXButton(matrix, "Get Feature Report", NULL, this, ID_GET_FEATURE_REPORT, BUTTON_NORMAL | LAYOUT_FILL_X);
 	get_feature_button->disable();
 
+	*/
+
 	// Input Group Box
-	gb = new FXGroupBox(vf, "Logging Window", FRAME_GROOVE | LAYOUT_FILL_Y| LAYOUT_FILL_X);
+	FXGroupBox* gb = new FXGroupBox(vf, "Logging Window", FRAME_GROOVE | LAYOUT_FILL_Y| LAYOUT_FILL_X);
 	
 	FXVerticalFrame* innerVF = new FXVerticalFrame(gb, LAYOUT_FILL_X | LAYOUT_FILL_Y);
 	FXHorizontalFrame* inputFrameHF = new FXHorizontalFrame(innerVF, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_SUNKEN | FRAME_THICK);
@@ -724,7 +718,7 @@ MainWindow::onDisconnect(FXObject* sender, FXSelector sel, void* ptr)
 	CloseDevice();
 	VDeviceConnected = false;
 
-	connected_device = false;
+	connected_device = NULL;
 	connected_label->setText("Disconnected");
 	output_button->disable();
 	feature_button->disable();
@@ -919,8 +913,11 @@ MainWindow::onSendFeatureReport(FXObject* sender, FXSelector sel, void* ptr)
 long
 MainWindow::onGetFeatureReport(FXObject* sender, FXSelector sel, void* ptr)
 {
-	char buf[256];
+	char buf[1024];
 	size_t len;
+
+	connected_device = GetCurrentDevice();
+
 
 	memset(buf, 0x0, sizeof(buf));
 	len = getDataFromTextField(get_feature_text, buf, sizeof(buf));
@@ -930,6 +927,8 @@ MainWindow::onGetFeatureReport(FXObject* sender, FXSelector sel, void* ptr)
 	}
 
 	int res = hid_get_feature_report(connected_device, (unsigned char*)buf, sizeof(buf));
+
+
 	if (res < 0) {
 		FXMessageBox::error(this, MBOX_OK, "Error Getting Report", "Could not get feature report from device. Error reported was: %ls", hid_error(connected_device));
 	}
